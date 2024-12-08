@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@/app/providers/theme-provider';
 import './globals.css';
 import QueryclientProvider from './providers/queryClientProvider';
-
+import SideBarProvider from './providers/sidebarProvider';
 interface RootLayoutProps {
   children: React.ReactNode;
 }
@@ -18,7 +18,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <SideBarProvider>{children}</SideBarProvider>
           </ThemeProvider>
         </QueryclientProvider>
       </body>
