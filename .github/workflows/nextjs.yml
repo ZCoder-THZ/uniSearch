@@ -1,0 +1,71 @@
+name: Next.js CI with Docker
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Set Environment Variables for Build
+        run: |
+          echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env
+
+          echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> .env
+
+      - run: npm run build --if-present
+
+      # Build Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t thanhtikezaw404/unisearch:4.0 .
+
+      # Push Docker image to Docker Hub (or GitHub Container Registry)
+      - name: Push Docker image to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - run: |
+          docker push thanhtikezaw404/unisearch:4.0
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.1
+        with:
+          ssh-private-key: ${{ secrets.sufer_key }}
+
+      - name: Deploy to server using Docker
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.sufer_user }}@${{ secrets.sufer_host }} << 'EOF'
+            echo 'SSH connected successfully'
+            # Pull the latest Docker image
+            docker pull thanhtikezaw404/unisearch:4.0
+
+            # Stop and remove any existing container
+            docker stop nextjs-app || true
+            docker rm nextjs-app || true
+
+            # Run the new container
+            docker run -d -p 3000:3000 --name nextjs-app thanhtikezaw404/unisearch:4.0
+          EOF
