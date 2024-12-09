@@ -4,6 +4,7 @@ import React from 'react';
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
+import Skeleton from 'react-loading-skeleton';
 
 function Page() {
   const { slug } = useParams();
@@ -14,15 +15,14 @@ function Page() {
   };
 
   const { data, isLoading } = useQuery({
-    queryKey: [slug, 'university', 1],
+    queryKey: [slug, 'university'],
     queryFn: getUniversity,
+    retry: 1,
   });
-
-  console.log(data, slug);
 
   return (
     <div className="col-4 w-3/4 mx-auto mt-32">
-      {isLoading && <div>Loading...</div>}
+      {isLoading && <Loading />}
       {data && (
         <div>
           <h1>University Name: {data.university.name}</h1>
@@ -49,3 +49,12 @@ function Page() {
 }
 
 export default Page;
+
+const Loading = () => (
+  <div className="p-4">
+    <Skeleton height={20} count={1} width={200} className="mb-4" />
+    <Skeleton height={20} count={1} width={200} className="mb-4" />
+
+    <Skeleton height={10} count={10} />
+  </div>
+);

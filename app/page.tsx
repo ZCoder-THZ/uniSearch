@@ -6,21 +6,10 @@ import { useInView } from 'react-intersection-observer';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import axios from 'axios';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
-import { ModeToggle } from '@/components/ModeToggle';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+
 import { Input } from '@/components/ui/input';
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from '@/components/ui/sidebar';
 
 type University = {
   id: number;
@@ -89,6 +78,15 @@ export default function Page() {
         />
       </div>
 
+      {/* Skeleton loader for the grid */}
+      {isFetching && !isFetchingNextPage && (
+        <div className="grid auto-rows-min gap-4 md:grid-cols-4">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
+        </div>
+      )}
+
       <div className="grid auto-rows-min gap-4 md:grid-cols-4">
         {data?.pages.map((page) =>
           page.data.map((university: University, index: number) => (
@@ -137,12 +135,21 @@ export default function Page() {
         )}
       </div>
 
-      {(isFetching || isFetchingNextPage) && (
-        <div className="loading-overlay">
-          <div className="spinner">Loading...</div>
+      {isFetchingNextPage && (
+        <div className="grid auto-rows-min gap-4 md:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
         </div>
       )}
+
       {!hasNextPage && <p>No more universities to load.</p>}
     </div>
   );
 }
+
+const SkeletonCard = () => (
+  <div className="aspect-video rounded-xl bg-muted/50 overflow-hidden">
+    <Skeleton height="100%" />
+  </div>
+);

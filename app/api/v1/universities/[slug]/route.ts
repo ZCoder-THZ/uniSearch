@@ -20,7 +20,7 @@ export async function GET(
     // Find the university by slug
     const university = await prisma.universities.findFirst({
       where: {
-        name: params.slug,
+        name: await params.slug,
       },
     });
 

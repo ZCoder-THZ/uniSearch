@@ -2,6 +2,7 @@ import { ThemeProvider } from '@/app/providers/theme-provider';
 import './globals.css';
 import QueryclientProvider from './providers/queryClientProvider';
 import SideBarProvider from './providers/sidebarProvider';
+import 'react-loading-skeleton/dist/skeleton.css';
 interface RootLayoutProps {
   children: React.ReactNode;
 }

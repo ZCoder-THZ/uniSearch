@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { PropsWithChildren } from 'react';
-
+import Link from 'next/link';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -28,7 +28,7 @@ export default function SideBarProvider({ children }: PropsWithChildren) {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">Uni Search</BreadcrumbLink>
+                <BreadcrumbLink href="/">Home</BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
 
